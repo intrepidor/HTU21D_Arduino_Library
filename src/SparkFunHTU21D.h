@@ -9,6 +9,7 @@
  
  */
  
+#ifndef HTU21D_ARDUINO_LIBRARY
 
 #if defined(ARDUINO) && ARDUINO >= 100
  #include "Arduino.h"
@@ -63,3 +64,5 @@ private:
   //Private Variables
 
 };
+#endif HTU21D_ARDUINO_LIBRARY
+
