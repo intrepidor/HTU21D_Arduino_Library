@@ -1,15 +1,16 @@
-/* 
+/*
  HTU21D Humidity Sensor Library
  By: Nathan Seidle
  SparkFun Electronics
  Date: September 22nd, 2013
  License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
- 
+
  Get humidity and temperature from the HTU21D sensor.
- 
+
  */
- 
-#ifndef HTU21D_ARDUINO_LIBRARY
+
+#ifndef _HTU21D_ARDUINO_LIBRARY_
+#define _HTU21D_ARDUINO_LIBRARY_
 
 #if defined(ARDUINO) && ARDUINO >= 100
  #include "Arduino.h"
@@ -64,5 +65,6 @@ private:
   //Private Variables
 
 };
-#endif HTU21D_ARDUINO_LIBRARY
+
+#endif // HTU21D_ARDUINO_LIBRARY
 
