@@ -6,14 +6,14 @@
  License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
  This library allows an Arduino to read from the HTU21D low-cost high-precision humidity sensor.
- 
+
  If you have feature suggestions or need support please use the github support page: https://github.com/sparkfun/HTU21D
 
  Hardware Setup: The HTU21D lives on the I2C bus. Attach the SDA pin to A4, SCL to A5. If you are using the SparkFun
  breakout board you *do not* need 4.7k pull-up resistors on the bus (they are built-in).
- 
+
  Link to the breakout board product:
- 
+
  Software:
  Call HTU21D.Begin() in setup.
  HTU21D.ReadHumidity() will return a float containing the humidity. Ex: 54.7
@@ -37,7 +37,11 @@ HTU21D::HTU21D()
 //Start I2C communication
 void HTU21D::begin(void)
 {
+#ifdef ARDUINO_ESP8266_ESP12
+  Wire.begin(2, 14); // the pins for SDA and SCL in nodemcu/pins_arduino.h are wrong! So specify them directly here.
+#else
   Wire.begin();
+#endif
 }
 
 #define MAX_WAIT 100
@@ -77,23 +81,23 @@ float HTU21D::read_value(byte cmd)
 //Read the humidity
 /*******************************************************************************************/
 //Calc humidity and return it to the user
-//Returns 998 if I2C timed out 
+//Returns 998 if I2C timed out
 //Returns 999 if CRC is wrong
 float HTU21D::readHumidity(void)
 {
         unsigned int rawHumidity = read_value(TRIGGER_HUMD_MEASURE_NOHOLD);
-	
+
 	//Given the raw humidity data, calculate the actual relative humidity
 	float tempRH = rawHumidity * (125.0 / 65536.0); //2^16 = 65536
 	float rh = tempRH - 6.0; //From page 14
-	
+
 	return(rh);
 }
 
 //Read the temperature
 /*******************************************************************************************/
 //Calc temperature and return it to the user
-//Returns 998 if I2C timed out 
+//Returns 998 if I2C timed out
 //Returns 999 if CRC is wrong
 float HTU21D::readTemperature(void)
 {
@@ -103,7 +107,7 @@ float HTU21D::readTemperature(void)
 	float tempTemperature = rawTemperature * (175.72 / 65536.0); //2^16 = 65536
 	float realTemperature = tempTemperature - 46.85; //From page 14
 
-	return(realTemperature);  
+	return(realTemperature);
 }
 
 //Set sensor resolution
@@ -122,7 +126,7 @@ void HTU21D::setResolution(byte resolution)
   userRegister &= B01111110; //Turn off the resolution bits
   resolution &= B10000001; //Turn off all other bits but resolution bits
   userRegister |= resolution; //Mask in the requested resolution bits
-  
+
   //Request a write to user register
   writeUserRegister(userRegister);
 }
@@ -131,18 +135,18 @@ void HTU21D::setResolution(byte resolution)
 byte HTU21D::readUserRegister(void)
 {
   byte userRegister;
-  
+
   //Request the user register
   Wire.beginTransmission(HTDU21D_ADDRESS);
   Wire.write(READ_USER_REG); //Read the user register
   Wire.endTransmission();
-  
+
   //Read result
   Wire.requestFrom(HTDU21D_ADDRESS, 1);
-  
+
   userRegister = Wire.read();
 
-  return(userRegister);  
+  return(userRegister);
 }
 
 void HTU21D::writeUserRegister(byte val)
