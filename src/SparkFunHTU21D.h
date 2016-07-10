@@ -60,7 +60,7 @@ private:
   //Private Functions
 
   byte check_crc(uint16_t message_from_sensor, uint8_t check_value_from_sensor);
-  float read_value(byte cmd);
+  unsigned int read_value(byte cmd);
 
   //Private Variables
 

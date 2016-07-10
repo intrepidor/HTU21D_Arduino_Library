@@ -47,7 +47,7 @@ void HTU21D::begin(void)
 #define MAX_WAIT 100
 #define DELAY_INTERVAL 10
 #define MAX_COUNTER (MAX_WAIT/DELAY_INTERVAL)
-float HTU21D::read_value(byte cmd)
+unsigned int HTU21D::read_value(byte cmd)
 {
 	//Request a humidity reading
 	Wire.beginTransmission(HTDU21D_ADDRESS);
@@ -75,7 +75,7 @@ float HTU21D::read_value(byte cmd)
 
 	if(check_crc(raw_value, checksum) != 0) return(999); //Error out
 
-        return raw_value & 0xFFFC; // Zero out the status bits
+    return raw_value & 0xFFFC; // Zero out the status bits
 }
 
 //Read the humidity
@@ -85,7 +85,8 @@ float HTU21D::read_value(byte cmd)
 //Returns 999 if CRC is wrong
 float HTU21D::readHumidity(void)
 {
-        unsigned int rawHumidity = read_value(TRIGGER_HUMD_MEASURE_NOHOLD);
+    unsigned int rawHumidity = read_value(TRIGGER_HUMD_MEASURE_NOHOLD);
+    if (rawHumidity==998 || rawHumidity==999) return 999.0F;
 
 	//Given the raw humidity data, calculate the actual relative humidity
 	float tempRH = rawHumidity * (125.0 / 65536.0); //2^16 = 65536
@@ -101,7 +102,8 @@ float HTU21D::readHumidity(void)
 //Returns 999 if CRC is wrong
 float HTU21D::readTemperature(void)
 {
-        unsigned int rawTemperature = read_value(TRIGGER_TEMP_MEASURE_NOHOLD);
+    unsigned int rawTemperature = read_value(TRIGGER_TEMP_MEASURE_NOHOLD);
+    if (rawTemperature==998 || rawTemperature==999) return 999.0F;
 
 	//Given the raw temperature data, calculate the actual temperature
 	float tempTemperature = rawTemperature * (175.72 / 65536.0); //2^16 = 65536
